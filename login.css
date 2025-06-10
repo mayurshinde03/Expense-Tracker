@@ -1,0 +1,115 @@
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body, html {
+  height: 100%;
+  font-family: 'Poppins', sans-serif;
+  background: #0f1011;
+}
+
+/* Login Container */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 20px;
+}
+
+/* Form Wrapper with Slide-In Animation */
+.form-wrapper {
+  background: #1a1b1e;
+  width: 400px;
+  max-width: 90%;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  animation: slideInRight 0.8s ease-out;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Animation Keyframes */
+@keyframes slideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Heading */
+.form-wrapper h2 {
+  margin-bottom: 20px;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Input Fields */
+.input-group {
+  margin-bottom: 20px;
+}
+.input-group input {
+  width: 100%;
+  padding: 12px 15px;
+  background: #2c2d32;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  font-size: 1rem;
+  color: #ffffff;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.input-group input:focus {
+  border-color: #6366f1;
+  outline: none;
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.2);
+}
+
+/* Button Styles */
+.btn {
+  background: #6366f1;
+  color: #ffffff;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.3s;
+}
+.btn:hover {
+  background: #818cf8;
+  transform: scale(1.03);
+}
+
+/* Switch Link */
+.switch-link {
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+.switch-link a {
+  color: #6366f1;
+  text-decoration: none;
+  font-weight: 600;
+}
+.switch-link a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .form-wrapper {
+    width: 90%;
+    padding: 20px;
+  }
+  .btn {
+    font-size: 1rem;
+    padding: 10px 15px;
+  }
+}

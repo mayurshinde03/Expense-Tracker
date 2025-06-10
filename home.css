@@ -1,0 +1,155 @@
+/* Define CSS variables for the new color scheme */
+:root {
+  --primary-bg: #000;             /* Black */
+  --secondary-bg: #434343;        /* Grey */
+  --nav-bg: #006400;              /* Dark green */
+  --text-color: #fff;             /* White text */
+  --accent: #FF6B6B;
+}
+
+/* Global Styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, var(--primary-bg), var(--secondary-bg));
+  color: var(--text-color);
+}
+
+/* Navigation Bar */
+.navbar {
+  background: var(--nav-bg);
+  padding: 1rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 100;
+  animation: slideInDown 1s ease-out forwards;
+}
+
+.nav-container {
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-brand {
+  font-size: 1.8rem;
+  color: var(--text-color);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* Both Sign Up and Login buttons now share the same styling */
+.nav-buttons a.btn {
+  padding: 10px 20px;
+  margin-left: 10px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.3s ease, transform 0.3s ease;
+  background-color: var(--nav-bg);
+  border: 2px solid var(--text-color);
+  color: var(--text-color);
+}
+
+.nav-buttons a.btn:hover {
+  transform: scale(1.05);
+}
+
+/* Sliding Transition Effects */
+.slide-in {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: slideInUp 0.8s ease-out forwards;
+}
+
+@keyframes slideInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Section Styling */
+section {
+  padding: 100px 0 60px; /* extra top padding to account for fixed navbar */
+  overflow: hidden;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.col-md-6 {
+  flex: 0 0 50%;
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* Headings and Paragraphs */
+h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: var(--text-color);
+}
+
+p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--text-color);
+}
+
+/* Image Styling */
+.img-fluid {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  transition: transform 0.5s ease;
+}
+
+.img-fluid:hover {
+  transform: scale(1.05);
+}
+
+/* Background for Light Sections */
+.bg-light {
+  background-color: #333;  /* Dark grey for contrast */
+  color: var(--text-color);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .col-md-6 {
+    flex: 0 0 100%;
+  }
+}

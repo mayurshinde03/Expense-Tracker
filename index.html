@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Expense Tracker Dashboard</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary-color: #6366f1;
+      --secondary-color: #818cf8;
+      --success-color: #10b981;
+      --danger-color: #ef4444;
+      --background: #0f1011;
+      --card-bg: #1a1b1e;
+      --text-primary: #ffffff;
+      --text-secondary: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --hover-bg: rgba(255, 255, 255, 0.05);
+      --table-header-bg: #2c2d32;
+      --chart-bg: rgba(255, 255, 255, 0.02);
+      --modal-bg: #1a1b1e;
+      --input-bg: #2c2d32;
+      --input-text: #ffffff;
+      --modal-text: #ffffff;
+    }
+
+    body {
+      background: var(--background);
+      font-family: 'Inter', sans-serif;
+      color: var(--text-primary);
+      min-height: 100vh;
+    }
+
+    .navbar {
+      background: rgba(37, 38, 43, 0.8) !important;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .navbar-brand {
+      color: var(--text-primary) !important;
+      font-weight: 600;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .form-control, .form-select {
+      background: var(--background);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary) !important;
+    }
+
+    .form-control::placeholder, .form-select::placeholder {
+      color: var(--text-muted);
+    }
+
+    .form-control:focus, .form-select:focus {
+      background: var(--background);
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+      color: var(--text-primary);
+    }
+
+    .table {
+      color: var(--text-primary) !important;
+      background: var(--card-bg);
+      margin-bottom: 0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .table th {
+      background: var(--table-header-bg);
+      color: var(--text-secondary);
+      font-weight: 600;
+      padding: 1rem;
+      font-size: 0.875rem;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .table td {
+      color: var(--text-primary);
+      background: var(--card-bg);
+      border-color: var(--border-color);
+      padding: 1rem;
+      vertical-align: middle;
+    }
+
+    .table tbody tr {
+      transition: background-color 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+      background-color: var(--hover-bg);
+    }
+
+    .table td:nth-child(3) {
+      color: var(--success-color);
+      font-weight: 500;
+    }
+
+    .btn-danger {
+      background-color: var(--danger-color);
+      border: none;
+      padding: 0.25rem 0.75rem;
+    }
+
+    @keyframes slideOut {
+      to {
+        transform: translateX(-100%);
+        opacity: 0;
+      }
+    }
+
+    .slide-out {
+      animation: slideOut 0.3s ease forwards;
+    }
+
+    .card-body {
+      padding: 0;
+    }
+
+    .card-body h6 {
+      color: var(--text-secondary);
+    }
+
+    .card-body h3 {
+      color: var(--text-primary);
+    }
+
+    .table-responsive {
+      padding: 1rem;
+    }
+
+    .chart-container {
+      background: transparent;
+      border-radius: 12px;
+      padding: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      height: 450px !important;
+      backdrop-filter: blur(8px);
+    }
+
+    .btn-primary {
+      background: var(--primary-color);
+      border: none;
+      color: white;
+    }
+
+    .btn-outline-primary {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+
+    .btn-outline-primary:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+    }
+
+    .modal-title {
+      color: var(--text-primary);
+    }
+
+    .form-label {
+      color: var(--text-primary);
+    }
+
+    .form-text {
+      color: var(--text-secondary) !important;
+    }
+
+    .table td, .table th {
+      color: var(--text-primary) !important;
+    }
+
+    .glass-effect {
+      background: rgba(37, 38, 43, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color);
+    }
+
+    .card-header {
+      background: var(--table-header-bg) !important;
+      color: var(--text-primary);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+    }
+
+    .activity-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text-primary);
+    }
+
+    .activity-date {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .activity-type {
+      color: var(--primary-color);
+      font-weight: 500;
+    }
+
+    .activity-amount {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .alert {
+      margin: 1rem 0;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .alert-danger {
+      background-color: rgba(239, 68, 68, 0.2);
+      color: var(--danger-color);
+    }
+
+    .alert-warning {
+      background-color: rgba(255, 193, 7, 0.2);
+      color: #ffc107;
+    }
+
+    .budget-alert {
+      position: fixed;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      min-width: 300px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border: none;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translate(-50%, -100%);
+        opacity: 0;
+      }
+      to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+      }
+    }
+
+    .alert-warning {
+      background: rgba(251, 191, 36, 0.1);
+      color: #fbbf24;
+      border: 1px solid rgba(251, 191, 36, 0.2);
+    }
+
+    .alert-danger {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-close {
+      filter: invert(1) grayscale(100%) brightness(200%);
+    }
+
+    .input-group-text {
+      background-color: var(--card-bg);
+      color: var(--text-primary);
+      border-color: var(--border-color);
+    }
+
+    option {
+      background-color: var(--card-bg);
+      color: var(--text-primary);
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Expense Tracker</a>
+      <div class="d-flex">
+        <a class="btn btn-outline-primary" href="login.html">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container-fluid px-4 py-4">
+    <div class="row g-4">
+      <!-- Sidebar: Chart and Budget -->
+      <div class="col-lg-4">
+        <!-- Budget Cards -->
+        <div class="row g-3 mb-4">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <h6 class="text-secondary mb-2">Total Budget</h6>
+                <h3 class="mb-0" id="total-budget">₹2000.00</h3>
+                <button class="btn btn-sm btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#budgetModal">
+                  Edit Budget
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <h6 class="text-secondary mb-2">Available Balance</h6>
+                <h3 class="mb-0 text-success" id="available-balance">₹2000.00</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <h6 class="text-secondary mb-2">Total Expense</h6>
+                <h3 class="mb-0 text-danger" id="total-expense">₹0.00</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Pie Chart -->
+        <div class="chart-container">
+          <canvas id="expenseChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Main Content: Expense Form and Daily Expense Table -->
+      <div class="col-lg-8">
+        <!-- Expense Form -->
+        <div class="card mb-4">
+          <div class="card-header bg-info text-white">Add New Expense</div>
+          <div class="card-body">
+            <form id="expense-form">
+              <div class="row g-3 align-items-center">
+                <div class="col-md-4">
+                  <input type="date" class="form-control" id="expense-date" required>
+                </div>
+                <div class="col-md-4">
+                  <select class="form-select" id="expense-description" required>
+                    <option value="">Select Expense Type</option>
+                    <option value="Groceries">Groceries</option>
+                    <option value="Transportation">Transportation</option>
+                    <option value="Utilities">Utilities</option>
+                    <option value="Entertainment">Entertainment</option>
+                    <option value="Shopping">Shopping</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Dining">Dining</option>
+                    <option value="Education">Education</option>
+                    <option value="other">Other</option>
+                  </select>
+                  <input type="text" class="form-control mt-2 d-none" id="custom-description" placeholder="Enter custom expense">
+                </div>
+                <div class="col-md-3">
+                  <input type="number" class="form-control" id="expense-amount" placeholder="Amount" required>
+                </div>
+                <div class="col-md-1">
+                  <button type="submit" class="btn btn-success w-100">Add</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <!-- Daily Expense Section -->
+        <div class="card">
+          <div class="card-header">Daily Expenses</div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="expense-table-body">
+                  <!-- Dynamic expense rows will be added here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- Activity History -->
+        <div class="card mt-4">
+          <div class="card-header">Activity History</div>
+          <div class="card-body" id="activity-list">
+            <!-- Dynamic activity items will be displayed here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Budget Modal -->
+  <div class="modal fade" id="budgetModal" tabindex="-1" aria-labelledby="budgetModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="budgetModalLabel">Edit Total Budget</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="budget-form" class="needs-validation" novalidate>
+            <div class="mb-3">
+              <label for="budget-input" class="form-label">New Total Budget</label>
+              <div class="input-group">
+                <span class="input-group-text">₹</span>
+                <input 
+                  type="number" 
+                  class="form-control" 
+                  id="budget-input" 
+                  placeholder="Enter new total budget" 
+                  min="0"
+                  step="0.01"
+                  required
+                >
+              </div>
+              <div class="form-text">
+                Current expenses: ₹<span id="current-expense">0.00</span>
+              </div>
+              <div class="invalid-feedback">
+                Budget must be greater than or equal to current expenses
+              </div>
+            </div>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary">Update Budget</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Global variables
+    let totalBudget = 2000;
+    let totalExpense = 0;
+
+    // Retrieve the CSS variable value for border color
+    const rootStyles = getComputedStyle(document.documentElement);
+    const borderColorValue = rootStyles.getPropertyValue('--border-color').trim() || 'rgba(255,255,255,0.1)';
+
+    // Initialize the chart right after your global variables
+    const ctx = document.getElementById('expenseChart').getContext('2d');
+    const expenseChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Available Balance'],
+        datasets: [{
+          data: [2000],
+          backgroundColor: [
+            'rgba(255, 255, 255, 0.7)',    // White transparent for available balance
+            'rgba(239, 68, 68, 0.7)',      // Red
+            'rgba(16, 185, 129, 0.7)',     // Green
+            'rgba(245, 158, 11, 0.7)',     // Yellow
+            'rgba(139, 92, 246, 0.7)',     // Purple
+            'rgba(14, 165, 233, 0.7)',     // Blue
+            'rgba(236, 72, 153, 0.7)',     // Pink
+            'rgba(251, 146, 60, 0.7)',     // Orange
+          ],
+          borderColor: [
+            'rgba(255, 255, 255, 0.9)',
+            'rgba(239, 68, 68, 0.9)',
+            'rgba(16, 185, 129, 0.9)',
+            'rgba(245, 158, 11, 0.9)',
+            'rgba(139, 92, 246, 0.9)',
+            'rgba(14, 165, 233, 0.9)',
+            'rgba(236, 72, 153, 0.9)',
+            'rgba(251, 146, 60, 0.9)',
+          ],
+          borderWidth: 2,
+          cutout: '70%'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              color: 'rgba(255, 255, 255, 0.9)',
+              font: {
+                family: 'Inter',
+                size: 14,
+                weight: '500'
+              },
+              padding: 20,
+              usePointStyle: true
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(17, 24, 39, 0.95)',
+            titleColor: '#ffffff',
+            bodyColor: '#ffffff',
+            padding: 12,
+            boxPadding: 8,
+            usePointStyle: true,
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.raw;
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((value / total) * 100).toFixed(1);
+                return ` ${label}: ₹${value.toFixed(2)} (${percentage}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Update the calculateExpensesByCategory function to properly handle the data
+    function calculateExpensesByCategory() {
+      const tbody = document.getElementById('expense-table-body');
+      const rows = tbody.getElementsByTagName('tr');
+      const categories = {};
+      
+      for (let row of rows) {
+        const description = row.cells[1].innerText;
+        const amount = parseFloat(row.dataset.amount || row.cells[2].innerText.replace('₹', ''));
+        categories[description] = (categories[description] || 0) + amount;
+      }
+      
+      return categories;
+    }
+
+    // Update the updateChart function
+    function updateChart() {
+      const categories = calculateExpensesByCategory();
+      const availableBalance = totalBudget - totalExpense;
+      
+      // Prepare data arrays
+      const data = [];
+      const labels = [];
+      const backgroundColors = [
+        'rgba(255, 255, 255, 0.7)',    // Available Balance (White)
+        'rgba(239, 68, 68, 0.7)',      // Red
+        'rgba(16, 185, 129, 0.7)',     // Green
+        'rgba(245, 158, 11, 0.7)',     // Yellow
+        'rgba(139, 92, 246, 0.7)',     // Purple
+        'rgba(14, 165, 233, 0.7)',     // Blue
+        'rgba(236, 72, 153, 0.7)',     // Pink
+        'rgba(251, 146, 60, 0.7)',     // Orange
+        'rgba(20, 184, 166, 0.7)',     // Teal
+      ];
+      const borderColors = backgroundColors.map(color => 
+        color.replace('0.7', '0.9')
+      );
+
+      // Add available balance first
+      if (availableBalance > 0) {
+        labels.push('Available Balance');
+        data.push(availableBalance);
+      }
+
+      // Add expenses by category
+      Object.entries(categories)
+        .filter(([_, amount]) => amount > 0) // Only show categories with expenses
+        .sort((a, b) => b[1] - a[1]) // Sort by amount descending
+        .forEach(([category, amount]) => {
+          labels.push(category);
+          data.push(amount);
+        });
+
+      // Update chart data
+      expenseChart.data.labels = labels;
+      expenseChart.data.datasets[0].data = data;
+      expenseChart.data.datasets[0].backgroundColor = backgroundColors.slice(0, data.length);
+      expenseChart.data.datasets[0].borderColor = borderColors.slice(0, data.length);
+
+      // Update chart options
+      expenseChart.options.plugins.tooltip.callbacks.label = function(context) {
+        const label = context.label || '';
+        const value = context.raw;
+        const percentage = ((value / totalBudget) * 100).toFixed(1);
+        return ` ${label}: ₹${value.toFixed(2)} (${percentage}% of budget)`;
+      };
+
+      // Add center text showing total budget and expenses
+      const centerText = {
+        id: 'centerText',
+        afterDatasetDraw(chart) {
+          const { ctx } = chart;
+          const centerX = chart.getDatasetMeta(0).data[0]?.x ?? chart.width / 2;
+          const centerY = chart.getDatasetMeta(0).data[0]?.y ?? chart.height / 2;
+
+          ctx.save();
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          
+          // Show total budget
+          ctx.font = '600 16px Inter';
+          ctx.fillStyle = '#ffffff';
+          ctx.fillText('Total Budget', centerX, centerY - 25);
+          ctx.font = '700 20px Inter';
+          ctx.fillText(`₹${totalBudget.toFixed(2)}`, centerX, centerY);
+          
+          // Show percentage spent
+          ctx.font = '500 14px Inter';
+          const percentSpent = ((totalExpense / totalBudget) * 100).toFixed(1);
+          ctx.fillText(`${percentSpent}% spent`, centerX, centerY + 25);
+          
+          ctx.restore();
+        }
+      };
+
+      // Update plugins
+      expenseChart.options.plugins.centerText = centerText;
+      expenseChart.update('show');
+    }
+
+    // Update the budget, expense, and chart metrics
+    function updateMetrics() {
+      const availableBalance = totalBudget - totalExpense;
+      
+      document.getElementById('total-budget').innerText = '₹' + totalBudget.toFixed(2);
+      document.getElementById('total-expense').innerText = '₹' + totalExpense.toFixed(2);
+      document.getElementById('available-balance').innerText = '₹' + availableBalance.toFixed(2);
+      document.getElementById('current-expense').innerText = totalExpense.toFixed(2);
+      
+      // Add warning checks
+      checkBudgetWarning(availableBalance, totalBudget);
+      
+      updateChart();
+    }
+
+    // Add these functions after the existing updateMetrics function
+    function checkBudgetWarning(availableBalance, totalBudget) {
+      const warningThreshold = 0.2; // 20% of budget remaining
+      const criticalThreshold = 0.1; // 10% of budget remaining
+      
+      const percentageRemaining = availableBalance / totalBudget;
+      
+      if (availableBalance < 0) {
+        showBudgetAlert('danger', 'You have exceeded your budget! Please adjust your spending.');
+      } else if (percentageRemaining <= criticalThreshold) {
+        showBudgetAlert('danger', `Warning: Only ${(percentageRemaining * 100).toFixed(1)}% of budget remaining!`);
+      } else if (percentageRemaining <= warningThreshold) {
+        showBudgetAlert('warning', `Caution: Only ${(percentageRemaining * 100).toFixed(1)}% of budget remaining.`);
+      }
+    }
+
+    function showBudgetAlert(type, message) {
+      // Remove any existing alerts
+      const existingAlert = document.querySelector('.budget-alert');
+      if (existingAlert) {
+        existingAlert.remove();
+      }
+
+      // Create new alert
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type} budget-alert`;
+      alert.role = 'alert';
+      alert.innerHTML = `
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        ${message}
+      `;
+
+      // Insert alert after navbar
+      const navbar = document.querySelector('.navbar');
+      navbar.insertAdjacentElement('afterend', alert);
+
+      // Auto-hide alert after 5 seconds if not critical
+      if (type !== 'danger') {
+        setTimeout(() => alert.remove(), 5000);
+      }
+    }
+
+    // Add expense to the table and update total expense
+    function addExpense(date, description, amount) {
+      const tbody = document.getElementById('expense-table-body');
+      const tr = document.createElement('tr');
+      tr.dataset.amount = parseFloat(amount);
+
+      const tdDate = document.createElement('td');
+      tdDate.innerText = date;
+      tr.appendChild(tdDate);
+
+      const tdDescription = document.createElement('td');
+      tdDescription.innerText = description;
+      tr.appendChild(tdDescription);
+
+      const tdAmount = document.createElement('td');
+      tdAmount.innerText = '₹' + parseFloat(amount).toFixed(2);
+      tr.appendChild(tdAmount);
+
+      const tdAction = document.createElement('td');
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'btn btn-danger btn-sm';
+      deleteBtn.innerText = 'Delete';
+      deleteBtn.onclick = function() {
+        const expenseValue = parseFloat(tr.dataset.amount);
+        totalExpense -= expenseValue;
+        updateMetrics();
+        tr.classList.add('slide-out');
+        tr.addEventListener('animationend', () => {
+          tr.remove();
+        });
+      };
+      tdAction.appendChild(deleteBtn);
+      tr.appendChild(tdAction);
+
+      tbody.appendChild(tr);
+      totalExpense += parseFloat(amount);
+      updateMetrics();
+    }
+
+    // Handle expense form submission
+    document.getElementById('expense-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const date = document.getElementById('expense-date').value;
+      let description = document.getElementById('expense-description').value;
+      if (description === 'other') {
+        description = document.getElementById('custom-description').value;
+      }
+      const amount = parseFloat(document.getElementById('expense-amount').value);
+
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:5000/api/expenses', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: token,
+          },
+          body: JSON.stringify({ date, description, amount }),
+        });
+
+        if (response.ok) {
+          // Optionally, you can remove the manual addition since fetchExpenses recalculates totalExpense
+          totalExpense += amount;
+          updateMetrics();
+          fetchExpenses();
+          fetchActivityHistory();
+          e.target.reset();
+        } else {
+          const error = await response.json();
+          alert(error.message);
+        }
+      } catch (error) {
+        console.error('Error adding expense:', error);
+      }
+    });
+
+    // Replace the existing budget form submission handler with this updated version
+    document.getElementById('budget-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const newBudget = parseFloat(document.getElementById('budget-input').value);
+      
+      if (isNaN(newBudget) || newBudget <= 0) {
+        alert('Please enter a valid budget amount');
+        return;
+      }
+      
+      if (newBudget < totalExpense) {
+        alert('New budget cannot be less than current expenses');
+        return;
+      }
+
+      // Update budget directly since we're not using an API
+      totalBudget = newBudget;
+      updateMetrics();
+      
+      // Close modal
+      const budgetModal = document.getElementById('budgetModal');
+      const modal = bootstrap.Modal.getInstance(budgetModal);
+      modal.hide();
+      
+      // Reset form
+      e.target.reset();
+      
+      // Show success message
+      alert('Budget updated successfully!');
+    });
+
+    // Add this function to validate budget input
+    document.getElementById('budget-input').addEventListener('input', function() {
+      const input = parseFloat(this.value);
+      const submitBtn = this.form.querySelector('button[type="submit"]');
+      
+      if (isNaN(input) || input < totalExpense) {
+        submitBtn.disabled = true;
+        this.setCustomValidity('Budget must be greater than or equal to current expenses');
+      } else {
+        submitBtn.disabled = false;
+        this.setCustomValidity('');
+      }
+    });
+
+    // Fetch and display expenses from the API
+    async function fetchExpenses() {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:5000/api/expenses', {
+          headers: { Authorization: token },
+        });
+        const expenses = await response.json();
+
+        totalExpense = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+
+        const tbody = document.getElementById('expense-table-body');
+        tbody.innerHTML = '';
+        expenses.forEach(expense => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${new Date(expense.date).toLocaleDateString()}</td>
+            <td>${expense.description}</td>
+            <td>₹${expense.amount.toFixed(2)}</td>
+            <td><button class="btn btn-danger btn-sm" onclick="deleteExpense('${expense._id}')">Delete</button></td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        updateMetrics();
+      } catch (error) {
+        console.error('Error fetching expenses:', error);
+      }
+    }
+
+    // Fetch and display activity history
+    async function fetchActivityHistory() {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:5000/api/expenses/activity', {
+          headers: { Authorization: token }
+        });
+        const activities = await response.json();
+        displayActivities(activities);
+      } catch (error) {
+        console.error('Error fetching activities:', error);
+      }
+    }
+
+    // Display activities in the activity list element
+    function displayActivities(activities) {
+      const activityList = document.getElementById('activity-list');
+      activityList.innerHTML = activities.map(activity => {
+        // Convert activity type to user-friendly message
+        let activityMessage = '';
+        switch(activity.activity) {
+          case 'ADD_EXPENSE':
+            activityMessage = 'Added expense for';
+            break;
+          case 'DELETE_EXPENSE':
+            activityMessage = 'Removed expense for';
+            break;
+          case 'UPDATE_BUDGET':
+            activityMessage = 'Updated budget to';
+            break;
+          default:
+            activityMessage = activity.activity;
+        }
+
+        return `
+          <div class="activity-item">
+            <span class="activity-date">${new Date(activity.timestamp).toLocaleString()}</span>
+            <span class="activity-type">${activityMessage}</span>
+            <span class="activity-description">${activity.description}</span>
+            <span class="activity-amount">₹${activity.amount}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Fetch and update budget from the API
+    async function fetchBudget() {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:5000/api/budget', {
+          headers: { Authorization: token },
+        });
+        const data = await response.json();
+        if (response.ok && data.budget) {
+          totalBudget = data.budget;
+          updateMetrics();
+        }
+      } catch (error) {
+        console.error('Error fetching budget:', error);
+      }
+    }
+
+    // Delete an expense via the API
+    async function deleteExpense(id) {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`http://localhost:5000/api/expenses/${id}`, {
+          method: 'DELETE',
+          headers: { Authorization: token },
+        });
+
+        if (response.ok) {
+          fetchExpenses();
+          fetchActivityHistory();
+        } else {
+          const error = await response.json();
+          alert(error.message);
+        }
+      } catch (error) {
+        console.error('Error deleting expense:', error);
+      }
+    }
+
+    // Initialize metrics, chart, and fetch data on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchBudget();
+      fetchExpenses();
+      fetchActivityHistory();
+      updateMetrics();  // This will also call updateChart()
+    });
+
+    // Toggle custom expense description input
+    document.getElementById('expense-description').addEventListener('change', function() {
+      const customInput = document.getElementById('custom-description');
+      if (this.value === 'other') {
+        customInput.classList.remove('d-none');
+        customInput.required = true;
+      } else {
+        customInput.classList.add('d-none');
+        customInput.required = false;
+      }
+    });
+  </script>
+</body>
+</html>
